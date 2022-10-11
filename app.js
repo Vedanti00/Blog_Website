@@ -20,7 +20,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static("public"));
 
-//mongoose.connect("mongodb://localhost:27017/blogDB");
 mongoose.connect("mongodb://127.0.0.1:27017/blogDB", {useNewUrlParser: true});//Written the server at terminal by cmd mongosh
 
 const postSchema = {
@@ -29,14 +28,7 @@ const postSchema = {
 };
 const Post = mongoose.model("Post", postSchema);
 
-//const postContent = [];
-
 app.get("/", function(req, res) {
-  //Displays home file
-  // res.render("home", {
-  //   homeContent: homeStartingContent,
-  //   startPost: postContent
-  // });
 
   Post.find({}, function(err, posts){
     res.render("home", {
@@ -63,21 +55,9 @@ app.get("/compose", function(req, res) {
   res.render("compose");
 });
 
-app.get('/post/:postId', (req, res) => { // Express Routing Parameters
+app.get('/post/:postId', (req, res) => {
 
-  const requestedPostId = (req.params.postId); // Used lodash (_.lowerCase) for lower casing every letter
-
-  //Replaced by findOne
-  // postContent.forEach(function(post) {
-  //   const storedTitle = _.lowerCase(post.title);
-  //
-  //   if (paramCheck === storedTitle) {
-  //     res.render("post", {
-  //       PostPageTitle: post.title,
-  //       PostPageContent: post.content
-  //     });
-  //   }
-  // });
+  const requestedPostId = (req.params.postId);
 
   Post.findOne({_id: requestedPostId}, function(err, post){
 
@@ -90,11 +70,6 @@ app.get('/post/:postId', (req, res) => { // Express Routing Parameters
 });
 
 app.post("/compose", function(req, res) {
-  //const newPublishPost = req.body.postTitle; //Input name that compose.ejs has in the form
-  // const post = { //Creating JS object to pass multiple key value through one variable
-  //   title: req.body.postTitle,
-  //   content: req.body.postBody
-  // };
 
   const post = new Post ({
     title: req.body.postTitle,
@@ -106,8 +81,7 @@ app.post("/compose", function(req, res) {
       res.redirect("/");
     }
   });
-  //postContent.push(post);
-//  res.redirect("/");
+
 });
 
 app.listen(3000, function() {
