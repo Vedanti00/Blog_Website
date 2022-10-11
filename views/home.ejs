@@ -9,7 +9,7 @@
 <h1><%=post.title%></h1>
 <!--Limits the length of the string-->
 <p><%=post.content.substring(0, 100) + "..."%>
-  <a href="/postContent/<%=post.title%>">READ MORE</a>
+  <a href="/post/<%=post._id%>">READ MORE</a><!--post._id to display by is-->
 </p>
 
 <% }); %>

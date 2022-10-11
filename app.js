@@ -29,13 +29,22 @@ const postSchema = {
 };
 const Post = mongoose.model("Post", postSchema);
 
-const postContent = [];
+//const postContent = [];
 
 app.get("/", function(req, res) {
-  res.render("home", {
-    homeContent: homeStartingContent,
-    startPost: postContent
-  }); //Displays home file
+  //Displays home file
+  // res.render("home", {
+  //   homeContent: homeStartingContent,
+  //   startPost: postContent
+  // });
+
+  Post.find({}, function(err, posts){
+    res.render("home", {
+      homeContent: homeStartingContent,
+      startPost: posts
+      });
+  });
+
 });
 
 app.get("/about", function(req, res) {
@@ -54,19 +63,30 @@ app.get("/compose", function(req, res) {
   res.render("compose");
 });
 
-app.get('/postContent/:topic', (req, res) => { // Express Routing Parameters
-  const paramCheck = _.lowerCase(req.params.topic); // Used lodash (_.lowerCase) for lower casing every letter
+app.get('/post/:postId', (req, res) => { // Express Routing Parameters
 
-  postContent.forEach(function(post) {
-    const storedTitle = _.lowerCase(post.title);
+  const requestedPostId = (req.params.postId); // Used lodash (_.lowerCase) for lower casing every letter
 
-    if (paramCheck === storedTitle) {
-      res.render("post", {
-        PostPageTitle: post.title,
-        PostPageContent: post.content
-      });
-    }
+  //Replaced by findOne
+  // postContent.forEach(function(post) {
+  //   const storedTitle = _.lowerCase(post.title);
+  //
+  //   if (paramCheck === storedTitle) {
+  //     res.render("post", {
+  //       PostPageTitle: post.title,
+  //       PostPageContent: post.content
+  //     });
+  //   }
+  // });
+
+  Post.findOne({_id: requestedPostId}, function(err, post){
+
+   res.render("post", {
+     PostPageTitle: post.title,
+     PostPageContent: post.content
+    });
   });
+
 });
 
 app.post("/compose", function(req, res) {
@@ -80,9 +100,14 @@ app.post("/compose", function(req, res) {
     title: req.body.postTitle,
     content: req.body.postBody
   });
-  post.save();
+
+  post.save(function(err){
+    if (!err){
+      res.redirect("/");
+    }
+  });
   //postContent.push(post);
-  res.redirect("/");
+//  res.redirect("/");
 });
 
 app.listen(3000, function() {
